@@ -16,5 +16,5 @@ jobs:
          script: |
            cd /opt/gmonitor-all
            git pull
-           git submodule update
+           git submodule update --recursive --remote
            docker compose up --build -d
