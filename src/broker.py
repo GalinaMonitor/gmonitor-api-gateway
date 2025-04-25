@@ -5,7 +5,7 @@ from faststream.kafka import KafkaBroker
 from pydantic import BaseModel
 
 from settings import settings
-from client import GroqClient
+from client import GroqClient, ExternalHttpRequestError
 
 
 class TopicsEnum(StrEnum):
@@ -30,7 +30,10 @@ app = FastStream(broker)
 @broker.subscriber(TopicsEnum.GPT_BOT_REQUEST)  # type: ignore
 async def wait_gpt_request(gpt_request: GptRequest) -> None:
     client = GroqClient()
-    response = await client.send_message_to_llama(gpt_request.text)
+    try:
+        response = await client.send_message_to_llama(gpt_request.text)
+    except ExternalHttpRequestError as e:
+        response = f"Ошибка на стороне клиента нейросети: {str(e)}"
     await broker.connect()
     await broker.publish(
         GptResponse(chat_id=gpt_request.chat_id, text=response),
