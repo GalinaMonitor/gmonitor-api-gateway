@@ -4,8 +4,8 @@ from faststream import FastStream
 from faststream.kafka import KafkaBroker
 from pydantic import BaseModel
 
-from src.settings import settings
-from src.client import GroqClient
+from settings import settings
+from client import GroqClient
 
 
 class TopicsEnum(StrEnum):

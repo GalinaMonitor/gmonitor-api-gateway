@@ -5,7 +5,7 @@ from typing import Any, Callable, Generator
 
 from httpx import AsyncClient, AsyncHTTPTransport, HTTPError, Response, Auth, Request
 
-from src.settings import settings
+from settings import settings
 
 logger = logging.getLogger(__name__)
 
