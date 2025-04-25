@@ -1,0 +1,21 @@
+GptApiGateway
+GmonitorBot
+Kafka
+GmonitorCli
+
+GmonitorBot -> Kafka -> GptApiGateway: задачи на обработку
+GmonitorCli -> Kafka: задачи на обработку
+
+GptApiGateway -> Kafka -> GmonitorBot: результат
+Kafka -> GmonitorCli: результат
+
+GmonitorCli: {
+  поиск нужных команд
+  bitwarden-клиент
+  запуск задач
+}
+
+GmonitorBot: {
+  gpt-клиент
+  напоминания
+}
