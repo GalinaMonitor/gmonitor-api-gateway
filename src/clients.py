@@ -67,11 +67,14 @@ class GigaChatClient(BaseHttpxClient):  # type: ignore
         else:
             return None
 
+    def _prepare_message(self, message: str) -> str:
+        return f"{message} в формате jpg"
+
     def send_message_to_gigachat(self, message: str) -> str | None:
         payload = Chat(
             messages=[
                 Messages(role=MessagesRole.SYSTEM, content="Ты — Василий Кандинский"),
-                Messages(role=MessagesRole.USER, content=message),
+                Messages(role=MessagesRole.USER, content=self._prepare_message(message)),
             ],
             function_call="auto",
         )
