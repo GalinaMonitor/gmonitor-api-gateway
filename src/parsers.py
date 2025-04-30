@@ -1,3 +1,4 @@
+import base64
 from abc import ABC, abstractmethod
 from io import BytesIO
 
@@ -23,7 +24,7 @@ class ImageParser(BaseParser):
             image_file = await self.gigachat_client.download_image(image_uuid)
             image_filename = f"{image_uuid}.jpg"
             s3_link = self.s3_client.upload_file(
-                BytesIO(image_file.content.encode()), image_filename
+                BytesIO(base64.b64decode(image_file.content)), image_filename
             )
             return GptResponse(
                 text=s3_link, chat_id=request.chat_id, type=GptResponseType.IMAGE
