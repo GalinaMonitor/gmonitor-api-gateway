@@ -4,6 +4,5 @@ build/
 dist/
 wheels/
 *.egg-info
-.idea
-.venv
+**/.idea*
 .env

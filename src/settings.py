@@ -12,10 +12,5 @@ class Settings(BaseSettings):
     kafka_host: str = "localhost"
     kafka_port: int = 9092
 
-    aws_host: str = "host"
-    aws_bucket_name: str = "bucket"
-    aws_access_key_id: str = "access_key_id"
-    aws_secret_access_key: str = "secret_access_key"
-
 
 settings = Settings()

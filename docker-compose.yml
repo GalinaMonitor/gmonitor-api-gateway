@@ -5,6 +5,9 @@ x-base: &base
   build: .
   env_file:
     - .env
+  depends_on:
+    kafka:
+      condition: service_healthy
 
 services:
   faststream:
@@ -25,6 +28,14 @@ services:
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: kafka-topics.sh --bootstrap-server localhost:9092 --list
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
 
   kafka-ui:
     container_name: kafka-ui
@@ -33,3 +44,6 @@ services:
       - 8082:8080
     environment:
       DYNAMIC_CONFIG_ENABLED: true
+
+volumes:
+  kafka_data:
