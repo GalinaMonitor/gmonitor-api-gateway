@@ -22,11 +22,11 @@ class ImageParser(BaseParser):
         if image_uuid:
             image_file = await self.gigachat_client.download_image(image_uuid)
             image_filename = f"{image_uuid}.jpg"
-            self.s3_client.upload_file(
+            s3_link = self.s3_client.upload_file(
                 BytesIO(image_file.content.encode()), image_filename
             )
             return GptResponse(
-                text=image_filename, chat_id=request.chat_id, type=GptResponseType.IMAGE
+                text=s3_link, chat_id=request.chat_id, type=GptResponseType.IMAGE
             )
         return GptResponse(
             text="Картинка не сгенерилась",
