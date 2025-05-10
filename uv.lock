@@ -240,7 +240,7 @@ wheels = [
 [[package]]
 name = "gmonitor-lib"
 version = "1.0.0"
-source = { git = "https://github.com/GalinaMonitor/gmonitor-lib.git?rev=1.0.2#cc82823ff44f33e8c19345d332a102ab653bd801" }
+source = { git = "https://github.com/GalinaMonitor/gmonitor-lib.git?rev=1.0.3#bbdefc007fd0a21f5c569c07411a11f8c3e77f64" }
 dependencies = [
     { name = "boto3" },
     { name = "httpx" },
@@ -269,7 +269,7 @@ requires-dist = [
     { name = "boto3", specifier = ">=1.38.3" },
     { name = "faststream", extras = ["cli", "kafka"], specifier = ">=0.5.39" },
     { name = "gigachat", specifier = ">=0.1.39.post1" },
-    { name = "gmonitor-lib", git = "https://github.com/GalinaMonitor/gmonitor-lib.git?rev=1.0.2" },
+    { name = "gmonitor-lib", git = "https://github.com/GalinaMonitor/gmonitor-lib.git?rev=1.0.3" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "pydantic-settings", specifier = "==2.9.1" },
 ]
