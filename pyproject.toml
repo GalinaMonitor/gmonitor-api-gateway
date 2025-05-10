@@ -9,6 +9,7 @@ dependencies = [
     "faststream[cli,kafka]>=0.5.39",
     "gigachat>=0.1.39.post1",
     "gmonitor-lib",
+    "groq>=0.24.0",
     "httpx>=0.28.1",
     "pydantic-settings==2.9.1",
 ]
