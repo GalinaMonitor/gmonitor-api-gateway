@@ -4,13 +4,13 @@ from io import BytesIO
 
 from gmonitor_lib.clients import AWSClient
 
-from gmonitor_lib.schemas import GptResponse, GptRequest, GptResponseType
-from src.clients import GigaChatClient, GroqClient
+from gmonitor_lib.schemas import GptDto, GptDtoType
+from clients import GigaChatClient, GroqClient
 
 
 class BaseParser(ABC):
     @abstractmethod
-    async def process_request(self, request: GptRequest) -> GptResponse: ...
+    async def process_request(self, request: GptDto) -> GptDto: ...
 
 
 class ImageParser(BaseParser):
@@ -18,21 +18,21 @@ class ImageParser(BaseParser):
         self.s3_client = AWSClient()
         self.gigachat_client = GigaChatClient()
 
-    async def process_request(self, request: GptRequest) -> GptResponse:
-        image_uuid = self.gigachat_client.send_message_to_gigachat(request.text)
+    async def process_request(self, request: GptDto) -> GptDto:
+        image_uuid = self.gigachat_client.send_message_to_gigachat(request.content)
         if image_uuid:
             image_file = await self.gigachat_client.download_image(image_uuid)
             image_filename = f"{image_uuid}.jpg"
             s3_link = self.s3_client.upload_file(
                 BytesIO(base64.b64decode(image_file.content)), image_filename
             )
-            return GptResponse(
-                text=s3_link, chat_id=request.chat_id, type=GptResponseType.IMAGE
+            return GptDto(
+                content=s3_link, chat_id=request.chat_id, type=GptDtoType.IMAGE
             )
-        return GptResponse(
-            text="Картинка не сгенерилась",
+        return GptDto(
+            content="Картинка не сгенерилась",
             chat_id=request.chat_id,
-            type=GptResponseType.TEXT,
+            type=GptDtoType.TEXT,
         )
 
 
@@ -40,8 +40,20 @@ class TextParser(BaseParser):
     def __init__(self) -> None:
         self.groq_client = GroqClient()
 
-    async def process_request(self, request: GptRequest) -> GptResponse:
-        response = await self.groq_client.send_message_to_llama(request.text)
-        return GptResponse(
-            text=response, chat_id=request.chat_id, type=GptResponseType.TEXT
+    async def process_request(self, request: GptDto) -> GptDto:
+        response = await self.groq_client.text_generation(request.content)
+        return GptDto(
+            content=response, chat_id=request.chat_id, type=GptDtoType.TEXT
+        )
+
+
+class AudioParser(BaseParser):
+    def __init__(self) -> None:
+        self.groq_client = GroqClient()
+
+    async def process_request(self, request: GptDto) -> GptDto:
+        transcription = await self.groq_client.speech_to_text(request.content)
+        response = await self.groq_client.text_generation(transcription)
+        return GptDto(
+            content=response, chat_id=request.chat_id, type=GptDtoType.TEXT
         )

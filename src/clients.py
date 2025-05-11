@@ -4,7 +4,8 @@ from typing import Generator
 
 from gigachat import GigaChat
 from gigachat.models import Chat, Messages, MessagesRole, Image
-from gmonitor_lib.clients import BaseHttpxClient, HttpMethod
+from gmonitor_lib.clients import BaseHttpxClient
+from groq import AsyncGroq
 from httpx import Response, Auth, Request
 
 from settings import settings
@@ -21,30 +22,34 @@ class TokenAuth(Auth):
         yield request
 
 
-class GroqClient(BaseHttpxClient):  # type: ignore
-    def __init__(
-        self,
-        verify: bool = True,
-    ):
-        super().__init__(verify)
+class GroqClient:  # type: ignore
+    def __init__(self):
+        self.client = AsyncGroq(api_key=settings.groq_token)
         self._base_url = "https://api.groq.com"
         self._auth = TokenAuth(settings.groq_token)
 
-    async def send_message_to_llama(self, message: str) -> str:
-        response = await self._send_request(
-            path="/openai/v1/chat/completions",
-            method=HttpMethod.POST,
-            json={
-                "model": "llama-3.3-70b-versatile",
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": message,
-                    }
-                ],
-            },
+    async def text_generation(self, message: str) -> str:
+        response = await self.client.chat.completions.create(
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Верни ответ без форматирования Markdown"
+                },
+                {
+                    "role": "user",
+                    "content": message,
+                }
+            ],
+            model=settings.text_llm,
         )
-        return str(response["choices"][0]["message"]["content"])
+        return str(response.choices[0].message.content)
+
+    async def speech_to_text(self, message: str) -> str:
+        transcription = await self.client.audio.transcriptions.create(
+            url=message,
+            model=settings.transcription_llm,
+        )
+        return transcription.text
 
 
 class GigaChatClient(BaseHttpxClient):  # type: ignore
