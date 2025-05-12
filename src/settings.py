@@ -3,7 +3,7 @@ import logging
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    logging_level: str = logging.WARNING
+    logging_level: int = logging.WARNING
 
     groq_token: str = "token"
     gigachat_token: str = "token"
